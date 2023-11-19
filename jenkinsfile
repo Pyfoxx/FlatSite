@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Étape pour récupérer les sources depuis la branche principale du dépôt Git
+                git branch: 'main', url: 'https://github.com/Pyfoxx/FlatSite.git'
+            }
+        }
+
+        stage('Build') {
+            parallel {
+                // Étape de build pour générer le site
+                stage('Build Site') {
+                    steps {
+                        sh 'pandoc -s index.md --template _template_.html -o index.html'
+                    }
+                }
+
+                // Étape de build pour générer le fichier docx
+                stage('Build Docx') {
+                    steps {
+                        sh 'pandoc -s index.md -o index.docx'
+                    }
+                }
+            }
+        }
+    }
+}
